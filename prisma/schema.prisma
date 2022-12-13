@@ -1,0 +1,201 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Level {
+  ND1
+  NC2
+  L3  @map("300")
+  L4  @map("400")
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum User {
+  Admin
+  Student
+  Coordinator
+  Supervisor
+  Organisation
+}
+
+enum Title {
+  Prof @map("Professor")
+  Dr @map("Doctor")  
+  Mr
+  Mrs
+  Miss
+}
+
+enum Label {
+  indigo
+  gray
+  green
+  blue
+  red
+}
+
+enum Sector {
+  ICT               @map("Information Technology")
+  Healthcare
+  Agriculture
+  Transportation
+  Energy
+  Commercial
+  Financial         @map("Financial Services")
+  Aviation
+  Construction
+  Manufacturing
+  Education         @map("Education And Training")
+  Fashion
+  Logistics
+  Tourism
+  Telecommunication
+  Entertainment
+  Legal             @map("Legal Services")
+  Consultancy
+  Religion
+  Oil               @map("Oil And Gas")
+  Others
+}
+
+model Student {
+  id             String        @id @default(uuid())
+  firstName      String
+  lastName       String
+  matricNo       String        @unique
+  phone          String        @unique
+  address        String?
+  institute      String
+  department     String
+  level          Level?
+  gender         Gender?
+  place          String
+  email          String        @unique
+  password       String
+  avatar         String        @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
+  eligible       Boolean?      @default(false)
+  user           User          @default(Student)
+  supervisor     Supervisor?   @relation(fields: [supervisorId], references: [id])
+  coordinator    Coordinator?  @relation(fields: [coordinatorId], references: [id])
+  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  joinedDate     DateTime      @default(now())
+  logbooks       Logbook[]
+  supervisorId   String?
+  coordinatorId  String?
+  organisationId String?
+}
+
+model Supervisor {
+  id            String       @id @default(uuid())
+  title         Title
+  firstName     String
+  lastName      String
+  staffID       String      @unique
+  phone         String      @unique
+  institute     String
+  department    String
+  gender        Gender?
+  email         String       @unique
+  password      String
+  avatar        String?     @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
+  user          User        @default(Supervisor)
+  students      Student[]
+  coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
+  joinedDate    DateTime     @default(now())
+  coordinatorId String?
+  eligibles     Eligible[]
+}
+
+model Coordinator {
+  id          String       @id @default(uuid())
+  title       Title
+  firstName   String
+  lastName    String
+  staffID     String      @unique
+  phone       String      @unique
+  institute   String
+  department  String
+  gender      Gender?
+  email       String       @unique
+  password    String
+  avatar      String?      @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
+  user        User         @default(Coordinator)
+  students    Student[]
+  supervisors Supervisor[]
+  joinedDate  DateTime     @default(now())
+  Eligible    Eligible[]
+}
+
+model Organisation {
+  id         String    @id @default(uuid())
+  name       String
+  sector     Sector
+  phone      String   @unique
+  address    String
+  employees  Int
+  email      String    @unique
+  password   String
+  logo       String
+  user       User      @default(Organisation)
+  students   Student[]
+  joinedDate DateTime  @default(now())
+}
+
+model Admin {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String   @unique
+  password   String
+  avatar     String?
+  user       User     @default(Admin)
+  joinedDate DateTime @default(now())
+}
+
+model BlogPost {
+  id        String    @id @default(uuid())
+  title     String    @unique
+  content   String
+  image     String
+  createdAt DateTime? @default(now())
+  updateAt  DateTime? @updatedAt
+}
+
+model Eligible {
+  id            String       @id @default(uuid())
+  institute     String
+  department    String
+  level         Level
+  supervisor    Supervisor?  @relation(fields: [supervisorId], references: [id])
+  coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
+  matricNo      String       @unique
+  createdAt     DateTime?    @default(now())
+  supervisorId  String?
+  coordinatorId String?
+}
+
+model Logbook {
+  id          String    @id @default(uuid())
+  actId       String    @unique
+  day         DateTime?
+  title       String
+  description String
+  label       Label     @default(indigo)
+  diagram     String?
+  approved    Boolean?  @default(false)
+  student     Student?  @relation(fields: [studentId], references: [id])
+  createdAt   DateTime? @default(now())
+  studentId   String?
+}
