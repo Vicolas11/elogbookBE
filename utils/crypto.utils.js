@@ -9,8 +9,8 @@ const simple_crypto_js_1 = __importDefault(require("simple-crypto-js"));
 const dotenv_1 = require("dotenv");
 const apollo_server_express_1 = require("apollo-server-express");
 (0, dotenv_1.config)();
-const { cryptoSecretKey, secretKey } = constant_config_1.constant;
-const simpleCrypto = new simple_crypto_js_1.default(secretKey);
+const { cryptoSecretKey } = constant_config_1.constant;
+const simpleCrypto = new simple_crypto_js_1.default(cryptoSecretKey );
 const encryptToken = (token) => {
     const cipherText = simpleCrypto.encrypt(token);
     return cipherText;
