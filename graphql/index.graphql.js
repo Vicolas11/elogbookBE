@@ -50,9 +50,8 @@ const startApolloServer = async (app) => {
         console.log("\x1b[31m%s\x1b[0m", `UncaughtException Error: ${error}`);
         process.exit(1);
     });
-    await new Promise((resolve) => httpServer.listen({ port: port }, resolve));
-    console.log(`🚀 HTTP Server ready at http://localhost:${port}`);
-    console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
+    await new Promise((resolve) => httpServer.listen({ port }, resolve));
+    console.log(`server started on port ${port}`);
 };
 exports.startApolloServer = startApolloServer;
 //# sourceMappingURL=index.graphql.js.map

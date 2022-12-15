@@ -2,7 +2,7 @@
   "name": "elogbook-backend",
   "version": "1.0.0",
   "description": "elogbook Core Backend",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "jest",    
     "dev": "cross-env NODE_ENV=development nodemon",

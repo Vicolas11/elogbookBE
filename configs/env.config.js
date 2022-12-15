@@ -7,7 +7,7 @@ const ENV = process.env.NODE_ENV || "development";
 exports.envConfig = {
     url: process.env.BASE_URL,
     default_img: process.env.DEFAULT_IMG,
-    port: +process.env.APP_PORT || 8080,
+    port: +process.env.PORT || 8080,
     dev: ENV === "development",
     prod: ENV === "production",
     test: ENV === "test",
