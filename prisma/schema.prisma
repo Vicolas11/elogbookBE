@@ -1,5 +1,18 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it in the docs https//pris.ly/d/prisma-schema
+
+generator joi {
+  provider = "prisma-joi-generator"
+  output   = "./joi"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -96,10 +109,6 @@ model Student {
   supervisorId   String?
   coordinatorId  String?
   organisationId String?
-
-  @@index([supervisorId])
-  @@index([coordinatorId])
-  @@index([organisationId])
 }
 
 model Supervisor {
@@ -121,8 +130,6 @@ model Supervisor {
   joinedDate    DateTime     @default(now())
   coordinatorId String?
   eligibles     Eligible[]
-
-  @@index([coordinatorId])
 }
 
 model Coordinator {
@@ -191,9 +198,6 @@ model Eligible {
   createdAt     DateTime?    @default(now())
   supervisorId  String?
   coordinatorId String?
-
-  @@index([supervisorId])
-  @@index([coordinatorId])
 }
 
 model Logbook {
@@ -208,6 +212,4 @@ model Logbook {
   student     Student?  @relation(fields: [studentId], references: [id])
   createdAt   DateTime? @default(now())
   studentId   String?
-
-  @@index([studentId])
 }
