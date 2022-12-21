@@ -7,10 +7,10 @@ const genfilename_utils_1 = __importDefault(require("./genfilename.utils"));
 const apollo_server_express_1 = require("apollo-server-express");
 const env_config_1 = require("../configs/env.config");
 const checkfile_util_1 = __importDefault(require("./checkfile.util"));
+const fileremove_util_1 = __importDefault(require("./fileremove.util"));
 const fs_1 = require("fs");
 const dotenv_1 = require("dotenv");
 const path_1 = require("path");
-const fileremove_util_1 = __importDefault(require("./fileremove.util"));
 (0, dotenv_1.config)();
 const readStreamFile = async (args) => {
     const { file, action, subpath, oldImgURL } = args;
@@ -20,14 +20,14 @@ const readStreamFile = async (args) => {
     if (t !== "image/jpeg" && t !== "image/png" && t !== "image/jpg") {
         throw new apollo_server_express_1.UserInputError("Invalid image file uploaded!");
     }
-    // Check File size is not more than 1MB
+    // Check File size is not more than 100KB
     try {
-        const oneMB = 1000000; // 1MB
-        await (0, checkfile_util_1.default)(createReadStream, oneMB);
+        const hundredKB = 100000; // 100KB
+        await (0, checkfile_util_1.default)(createReadStream, hundredKB);
     }
     catch (error) {
         if (typeof error === "number") {
-            throw new apollo_server_express_1.UserInputError("Maximum file size is 1MB!");
+            throw new apollo_server_express_1.UserInputError("Maximum file size is 100KB!");
         }
     }
     const stream = createReadStream();

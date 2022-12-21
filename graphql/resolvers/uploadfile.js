@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const apollo_server_express_1 = require("apollo-server-express");
 const uploadfile_joi_1 = require("../../joi/uploadfile.joi");
+const apollo_server_express_1 = require("apollo-server-express");
+const cloudinary_util_1 = require("../../utils/cloudinary.util");
 const readStream_util_1 = __importDefault(require("../../utils/readStream.util"));
 const crypto_utils_1 = require("../../utils/crypto.utils");
 const deletefile_utils_1 = __importDefault(require("../../utils/deletefile.utils"));
@@ -12,7 +13,7 @@ const env_config_1 = require("../../configs/env.config");
 const getuser_util_1 = __importDefault(require("../../utils/getuser.util"));
 const { default_img } = env_config_1.envConfig;
 const uploadFileMutation = {
-    // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // CREATE UPLOAD >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     uploadFile: async (_, { input }, _ctx) => {
         var _a;
         const { file, type } = input;
@@ -98,7 +99,7 @@ const uploadFileMutation = {
         const token = (0, crypto_utils_1.decryptToken)(auth);
         const user = (0, getuser_util_1.default)(token);
         const { id: loginUserId, role } = user;
-        // Authenticate user
+        // Authenticate User
         if (!user || loginUserId === "" || role === "")
             throw new apollo_server_express_1.AuthenticationError("User not authenticated!");
         const { id, type, actId } = deleteInput;
@@ -155,6 +156,31 @@ const uploadFileMutation = {
             actId
         };
     },
+    //Delete An Image File from Cloudinary Media Library
+    deleteFromCloudinary: async (_, { input }, { auth }) => {
+        var _a;
+        const token = (0, crypto_utils_1.decryptToken)(auth);
+        const user = (0, getuser_util_1.default)(token);
+        const { id: loginUserId, role } = user;
+        // Authenticate User
+        if (!user || loginUserId === "" || role === "")
+            throw new apollo_server_express_1.AuthenticationError("User not authenticated!");
+        const { oldImgURL } = input;
+        // Validate Input field
+        const validate = uploadfile_joi_1.CloudDelInputSchema.validate(input);
+        const { error } = validate;
+        if (error)
+            throw new apollo_server_express_1.ValidationError(((_a = error === null || error === void 0 ? void 0 : error.details) === null || _a === void 0 ? void 0 : _a.map((err) => err.message)) ||
+                "Validation Error!");
+        const cloud = oldImgURL === null || oldImgURL === void 0 ? void 0 : oldImgURL.split("/")[2];
+        if (cloud !== "res.cloudinary.com")
+            throw new apollo_server_express_1.AuthenticationError("Invalid ImageURL!");
+        const result = await (0, cloudinary_util_1.deleteCloudinary)(oldImgURL);
+        return {
+            message: result === "ok" ? "Deleted successfully!" : "Deleted unsuccessfully!",
+            status: result === "ok" ? 200 : 500
+        };
+    }
 };
 exports.default = uploadFileMutation;
 //# sourceMappingURL=uploadfile.js.map

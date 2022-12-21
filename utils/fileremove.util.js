@@ -4,7 +4,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const fileRemover = async (args) => {
     const { filepath, subpath } = args;
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const path = (0, path_1.join)(__dirname, "../..", "public/upload", subpath, filepath);
             (0, fs_1.unlink)(path, (err) => {

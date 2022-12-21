@@ -15,7 +15,7 @@ const supervisorMutations = {
     // CREATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     supervisor: async (_, { registerInput: input }, { prisma }) => {
         var _a;
-        const { email, institute, department, firstName, lastName, staffID } = input;
+        const { email, institute, department, firstName, lastName, staffID, phone } = input;
         // Validate Input field
         const validate = supervisor_joi_1.SupervisorInputSchema.validate(input);
         const { error } = validate;
@@ -28,6 +28,18 @@ const supervisorMutations = {
         });
         if (supervisorExist)
             throw new apollo_server_express_1.AuthenticationError("Supervisor already existed!");
+        // Check if Supervisor Staff ID Already Exist
+        const staffIDExist = await prisma.supervisor.findUnique({
+            where: { staffID },
+        });
+        if (staffIDExist)
+            throw new apollo_server_express_1.AuthenticationError("Supervisor StaffID already existed!");
+        // Check if Supervisor Phone Already Exist
+        const phoneExist = await prisma.supervisor.findUnique({
+            where: { phone },
+        });
+        if (phoneExist)
+            throw new apollo_server_express_1.AuthenticationError("Supervisor phone number already existed!");
         // Get the Coordinator in a department of a school
         const coordinator = await prisma.coordinator.findFirst({
             where: {

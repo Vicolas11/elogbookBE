@@ -15,7 +15,7 @@ const studentMutations = {
     // CREATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     student: async (_, { registerInput: input }, { prisma }) => {
         var _a, _b, _c;
-        const { firstName, lastName, matricNo, address, institute, department, email, password, place: organisationEmail, } = input;
+        const { firstName, lastName, matricNo, address, institute, department, email, password, phone, place: organisationEmail, } = input;
         // Validate Input field
         const validate = student_joi_1.StudentInputSchema.validate(input);
         const { error } = validate;
@@ -31,6 +31,12 @@ const studentMutations = {
         });
         if (studentExist)
             throw new apollo_server_express_1.AuthenticationError("Student already existed!");
+        // Check if Student Phone Number Already Exist
+        const studentPhoneExist = await prisma.student.findFirst({
+            where: { phone },
+        });
+        if (studentPhoneExist)
+            throw new apollo_server_express_1.AuthenticationError("Phone number already existed!");
         // Check if the Student is Eligible
         const eligible = await prisma.eligible.findUnique({
             where: { matricNo },
@@ -172,11 +178,13 @@ const studentMutations = {
             email: updatedStudent.email,
             role: updatedStudent.user,
         });
+        const encryptAccessToken = (0, crypto_utils_1.encryptToken)(accessToken);
+        const encryptRefreshToken = (0, crypto_utils_1.encryptToken)(refreshToken);
         return {
             status: 201,
             message: "Updated student successfully!",
-            accessToken,
-            refreshToken,
+            accessToken: encryptAccessToken,
+            refreshToken: encryptRefreshToken,
             student: updatedStudent,
         };
     },

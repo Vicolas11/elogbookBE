@@ -14,7 +14,7 @@ const coordinatorMutations = {
     // CREATE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     coordinator: async (_, { registerInput: input }, { prisma }) => {
         var _a;
-        const { department, institute, email } = input;
+        const { department, institute, email, staffID, phone } = input;
         // Validate Input field
         const validate = coordinator_joi_1.CoordinatorInputSchema.validate(input);
         const { error } = validate;
@@ -27,6 +27,18 @@ const coordinatorMutations = {
         });
         if (coordinatorExist)
             throw new apollo_server_express_1.AuthenticationError("Coordinator already existed!");
+        // Check if Coordinator Phone Already Exist
+        const phoneNumberExist = await prisma.coordinator.findUnique({
+            where: { phone },
+        });
+        if (phoneNumberExist)
+            throw new apollo_server_express_1.AuthenticationError("Coordinator phone number already existed!");
+        // Check if Coordinator Staff ID Already Exist
+        const staffIDExist = await prisma.coordinator.findUnique({
+            where: { staffID },
+        });
+        if (staffIDExist)
+            throw new apollo_server_express_1.AuthenticationError("Coordinator StaffID already existed!");
         // Validate only a coordinator exist in dept of a school
         const onlyCoordExist = await prisma.coordinator.findFirst({
             where: { AND: [{ department }, { institute }] },
