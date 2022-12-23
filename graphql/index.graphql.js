@@ -23,7 +23,7 @@ const startApolloServer = async (app) => {
     catch (err) {
         console.log("\x1b[31m%s\x1b[0m", "😔 Prisma failed to connect database");
     }
-    const { port } = env_config_1.envConfig;
+    const { port, dev, prod } = env_config_1.envConfig;
     const httpServer = http_1.default.createServer(app);
     const server = new apollo_server_express_1.ApolloServer({
         schema: schema_1.default,
@@ -51,8 +51,13 @@ const startApolloServer = async (app) => {
         process.exit(1);
     });
     await new Promise((resolve) => httpServer.listen({ port: port }, resolve));
-    console.log(`🚀 HTTP Server ready at http://localhost:${port}`);
-    console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
+    if (dev) {
+        console.log(`🚀 Server ready at http://localhost:${port}`);
+        console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
+    }
+    if (prod) {
+        console.log(`🚀 Server running on ${port}`);
+    }
 };
 exports.startApolloServer = startApolloServer;
 //# sourceMappingURL=index.graphql.js.map
