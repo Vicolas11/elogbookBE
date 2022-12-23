@@ -148,7 +148,7 @@ const coordinatorMutations = {
         var _a;
         const token = (0, crypto_utils_1.decryptToken)(auth);
         const user = (0, getuser_util_1.default)(token);
-        const { email: loginUserEmail, role } = user;
+        const { email: loginUserEmail, role, id: loginUserID } = user;
         // Authenticate user
         if (!user || loginUserEmail === '' || role === '')
             throw new apollo_server_express_1.AuthenticationError("User not authenticated!");
@@ -173,6 +173,10 @@ const coordinatorMutations = {
         if (loginUserEmail !== email) {
             throw new apollo_server_express_1.AuthenticationError("Not authorized: not a genuine user!");
         }
+        //Delete the Eligible Data Associated with the Coordinator
+        await prisma.eligible.deleteMany({
+            where: { coordinatorId: loginUserID }
+        });
         // Delete Coordinator
         const deletedCoordinator = await prisma.coordinator.delete({
             where: { email: loginUserEmail },

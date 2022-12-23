@@ -24,6 +24,7 @@ const supervisor_1 = __importDefault(require("./login/supervisor"));
 const queries_6 = __importDefault(require("./student/queries"));
 const uploadfile_1 = __importDefault(require("./uploadfile"));
 const student_1 = __importDefault(require("./login/student"));
+const admin_1 = __importDefault(require("./login/admin"));
 const resolvers = {
     ...graphql_scalars_1.resolvers,
     Query: {
@@ -33,6 +34,7 @@ const resolvers = {
         ...queries_1.default,
         ...queries_4.default,
         ...queries_5.default,
+        ...admin_1.default,
         ...student_1.default,
         ...supervisor_1.default,
         ...coordinator_1.default,
